@@ -7,8 +7,8 @@ Supported Versions
 ------------------
 
 Slurm 23.11 or newer, with 26.05 as the primary target, installed from the distribution's packages on EL 8/9/10
-(from EPEL) and Ubuntu 22.04/24.04. Only EL 10 and Ubuntu 24.04 ship Slurm 23.11 or newer. On EL 8, EL 9, and
-Ubuntu 22.04 (Slurm 20.11, 22.05, and 21.08), provide newer packages through your own repository.
+(from EPEL) and Ubuntu 24.04. Only EL 10 and Ubuntu 24.04 ship Slurm 23.11 or newer. On EL 8 and EL 9 (EPEL has
+Slurm 20.11 and 22.05), provide newer packages through your own repository.
 
 Upgrading from Previous Versions
 --------------------------------

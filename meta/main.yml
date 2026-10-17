@@ -15,7 +15,6 @@ galaxy_info:
         - "10"
     - name: Ubuntu
       versions:
-        - jammy
         - noble
   galaxy_tags:
     - cluster

@@ -26,9 +26,10 @@
 
 ### Platforms
 
-- `meta/main.yml` now lists EL 8/9/10 and Ubuntu 22.04 (jammy) / 24.04 (noble)
-  instead of "all" for EL, Fedora, Ubuntu, and Debian. Debian and Fedora are
-  no longer declared, but the Debian code paths are unchanged.
+- `meta/main.yml` now lists EL 8/9/10 and Ubuntu 24.04 (noble) instead of
+  "all" for EL, Fedora, Ubuntu, and Debian. Ubuntu 22.04 is dropped because it
+  ships Slurm 21.08. Debian and Fedora are no longer declared, but the Debian
+  code paths are unchanged.
 
 ### Documentation
 

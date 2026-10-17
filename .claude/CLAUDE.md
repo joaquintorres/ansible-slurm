@@ -3,7 +3,7 @@
 ## Goal
 
 Make this role work with Slurm 23.11 and newer on current distributions
-(EL 8/9/10, Ubuntu 22.04/24.04), prioritizing the latest 26.05 version. Do this with the **smallest diff possible**.
+(EL 8/9/10, Ubuntu 24.04), prioritizing the latest 26.05 version. Do this with the **smallest diff possible**.
 This is a compatibility update, not a rewrite.
 
 ## Rules for every change
