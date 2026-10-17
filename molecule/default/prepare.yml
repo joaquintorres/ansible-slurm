@@ -34,8 +34,9 @@
       ansible.builtin.package:
         name: munge
 
+    # munge >= 0.5.14 has mungekey; EL 9's 0.5.13 only ships create-munge-key
     - name: Create munge key
-      ansible.builtin.command: mungekey --create
+      ansible.builtin.shell: if command -v mungekey >/dev/null; then mungekey --create; else create-munge-key; fi
       args:
         creates: /etc/munge/munge.key
 
