@@ -1,0 +1,38 @@
+---
+name: molecule
+
+'on':
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  molecule:
+    name: molecule (${{ matrix.platform }})
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: ubuntu2404
+            image: geerlingguy/docker-ubuntu2404-ansible:latest
+          - platform: el10
+            image: geerlingguy/docker-rockylinux10-ansible:latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Install tools
+        run: |
+          pip install ansible-core==2.19.14 molecule==26.10.0 docker==7.1.0
+          ansible-galaxy collection install community.docker:==4.8.5
+
+      - name: Run molecule
+        run: molecule test
+        env:
+          MOLECULE_IMAGE: ${{ matrix.image }}
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'

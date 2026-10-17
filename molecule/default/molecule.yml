@@ -1,5 +1,6 @@
 ---
-# One-node smoke test: controller + exec on Ubuntu 24.04 (Slurm 23.11 from universe).
+# One-node smoke test: controller + exec. MOLECULE_IMAGE picks the platform
+# (Ubuntu 24.04: Slurm 23.11 from universe; EL 10: Slurm 26.05 from EPEL).
 # Requires Docker and the community.docker collection.
 driver:
   name: default
@@ -7,13 +8,14 @@ driver:
     managed: true
 platforms:
   - name: slurm-aio
-    image: geerlingguy/docker-ubuntu2404-ansible:latest
+    image: ${MOLECULE_IMAGE:-geerlingguy/docker-ubuntu2404-ansible:latest}
     hostname: slurm-aio
 scenario:
   test_sequence:
     - destroy
     - syntax
     - create
+    - prepare
     - converge
     - idempotence
     - verify

@@ -1,0 +1,36 @@
+---
+- name: Prepare
+  hosts: all
+  tasks:
+    - name: Refresh apt cache
+      ansible.builtin.apt:
+        update_cache: true
+      when: ansible_os_family == 'Debian'
+
+    - name: Enable EPEL and CRB
+      when: ansible_os_family == 'RedHat'
+      block:
+        - name: Install EPEL
+          ansible.builtin.dnf:
+            name: [epel-release, dnf-plugins-core]
+
+        - name: Enable CRB
+          ansible.builtin.command: dnf config-manager --set-enabled crb
+          changed_when: false
+
+    # The role only copies a key given in slurm_munge_key; EL's munge package doesn't create one
+    - name: Install munge
+      ansible.builtin.package:
+        name: munge
+
+    - name: Create munge key
+      ansible.builtin.command: mungekey --create
+      args:
+        creates: /etc/munge/munge.key
+
+    - name: Set munge key ownership
+      ansible.builtin.file:
+        path: /etc/munge/munge.key
+        owner: munge
+        group: munge
+        mode: "0400"
