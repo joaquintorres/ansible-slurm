@@ -257,8 +257,8 @@ Package names are the same in all three: `slurm-ohpc`, `slurm-slurmctld-ohpc`,
   unit names. If they differ, stop and report before adding more overrides.
 - `__slurm_version` (T1) should read 25.05 or 25.11 on these hosts.
 - Make T10's `el10` CI job required (no `continue-on-error`) and add an
-  EL 9 + OpenHPC 3 job. Decided 2026-10-17: el10 uses EPEL, adding EPEL 10.3
-  in `prepare.yml` while the host is older than 10.3, because OpenHPC 4.1's
+  EL 9 + OpenHPC 3 job. Decided 2026-10-17: el10 uses EPEL, with `prepare.yml`
+  pointing the `epel` repo at the `epel-10` metalink (EPEL 10.3), because OpenHPC 4.1's
   EL 10 build lacks `auth/slurm`.
 
 Covers EL 8, 9, and 10. This lifts the "new installation sources" exclusion
@@ -398,13 +398,13 @@ Option-level exceptions remain, and none of them is a one-line fix:
 |---|---|---|
 | EL 8 | 20.11.9 | EPEL 8 (packages.fedoraproject.org) |
 | EL 9 | 22.05.11 | EPEL 9 |
-| EL 10 | none in EPEL 10.0–10.2; 26.05.4 only in EPEL 10.3 / 10.4 (corrected 2026-10-17) | EPEL. Rocky 10.2, the newest released EL 10, gets EPEL 10.2, which has no Slurm (first CI run: "No package slurm available"). |
+| EL 10 | none in EPEL 10.2; 26.05.4 in EPEL 10.3 / 10.4 (corrected again 2026-10-17) | EPEL. The folder a host gets depends on its `epel-release`, not its minor version: Rocky sets `releasever=10`. `epel-release` 10-7 (Rocky extras) and 10-8 (`epel-release-latest-10`) use the `epel-z-10` metalink, which serves 10.2 with no Slurm (first CI run: "No package slurm available"). 10-9 uses `epel-10`, which serves 10.3. Stream uses `epel-10s`, which serves 10.4. |
 | Ubuntu 22.04 | 21.08.5 | universe, `slurm-wlm` (packages.ubuntu.com). Dropped from the target list. |
 | Ubuntu 24.04 | 23.11.4 | universe |
 | Debian 12 | 22.05.8 | main (packages.debian.org) |
 | Debian 13 | 24.11.5 | main |
 
-Only Ubuntu 24.04 and Debian 13 ship 23.11 or later today. EL 10 does only once it reaches 10.3, or with OpenHPC 4 (`/OpenHPC/4/EL_10`, version not yet checked). Ubuntu 26.04
+Only Ubuntu 24.04 and Debian 13 ship 23.11 or later by default today. EL 10 gets 26.05 by pointing EPEL at `epel-10` (EPEL 10.3); OpenHPC 4.1 has 25.05.7, but without `auth/slurm`. Ubuntu 26.04
 (25.11.2) is out but isn't in CLAUDE.md's target list. SchedMD publishes
 source only; it has no distro repos.
 
@@ -450,9 +450,18 @@ Checked by reading RPM headers:
 | `jose-d/slurm_for_Rocky9` | 8/9/10 | 26.05.4 (EL9/10) | not documented | Unsigned (`gpgcheck=0`), manual builds. Not recommended. |
 | Build from source | any | any | with `--with jwt` | SchedMD `slurm.spec` (`rpmbuild -ta`) makes the same package names as EPEL, so `slurm_package_source: distro` works with a local repo. `--with jwt` needs `libjwt-devel` < 3; EPEL 10.2 has 2.1.2. Other build deps are unchecked. |
 
-Rocky makes minor releases every May and November, so 10.3 is expected
-around November 2026. That is an inference; Rocky publishes no dates. Once
-it ships, plain EPEL gives EL 10 Slurm 26.05 with `auth/slurm`.
+What decides EL 10 is the EPEL repository name, not the host's minor version.
+On Rocky, `$releasever` is `10`; `rocky-release-10.2` provides
+`system-release(releasever) = 10` and `releasever_minor = 2`. Fedora's
+metalink service maps the names server-side. Queried 2026-10-17:
+`epel-z-10` → 10.2, `epel-10` → 10.3, `epel-10s` → 10.4. Which repo is used is
+set by the `epel-release` version (dist-git `epel10.1` and `epel10.2`:
+`epel${releasever_minor:+-z}-$releasever`; `epel10.3` and `epel10`:
+`epel-$releasever${stream:+s}`). When `epel-z-10` moves on is Fedora's
+server-side choice; it isn't tied to a Rocky release, and I haven't verified
+the timing. The EPEL branches doc says `pub/epel/10` links to the latest 10.x,
+but the mirror has `/10` = 10.3 and `/10s` = `/10.4`. The doc doesn't
+describe the `-z` and `s` repo names.
 
 The RedHat package list includes `munge` but not `munge-libs`. The Debian
 list doesn't install `munge` explicitly; it relies on dependencies.
