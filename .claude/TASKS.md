@@ -141,14 +141,91 @@ default and explains the removed-parameter guard. Keep it under 30 lines.
 
 ---
 
-## [ ] T10 — Optional: smoke test — written, not yet run: no Docker in the authoring environment
+## [ ] T10 — Molecule in GitHub CI
 
-Do this only if there are no tests at all. Add a single Molecule scenario
-that runs a one-node, all-in-one cluster in a systemd-capable container,
-with a verify step that runs `srun hostname`.
+A Molecule scenario already exists in `molecule/default/` (commit 6ce62b8).
+It runs a one-node controller and exec setup on Ubuntu 24.04, and its verify
+step runs `srun hostname`. It has never run, because there was no Docker in
+the authoring environment. Make it run in GitHub Actions:
 
-This is the one task allowed to add new files. They go under
-`molecule/` only.
+- Add one workflow under `.github/workflows/` that runs `molecule test` on
+  pull requests and on pushes to `main`. Don't add any other CI system.
+- The workflow installs `ansible-core`, `molecule`, the `community.docker`
+  collection, and the Docker SDK for Python. Pin action and tool versions.
+- Run one matrix job per platform:
+  - Ubuntu 24.04 (Slurm 23.11 from universe).
+  - EL 10 (Rocky or Alma 10 with EPEL, Slurm 26.05). 26.05 is the priority
+    version.
+
+  Select the image per job, for example through an environment variable
+  read in `molecule.yml`. EPEL setup goes in `molecule/default/prepare.yml`,
+  not in the role.
+- Change the scenario only as far as it needs to pass. If a role bug blocks
+  it, stop and report; T11 owns role fixes.
+
+New files are allowed in `.github/workflows/` and `molecule/` only.
+
+**Acceptance:** The workflow passes on GitHub for every platform, including
+the `srun hostname` verify step. Link the run in the report. If you can't
+push or run it from this environment, say so and leave the box unchecked.
+
+---
+
+## [ ] T11 — Pre-existing bugs, AuthType restart, and slurm.key
+
+Make each item its own commit (`slurm: T11a ...`, `slurm: T11b ...`), with
+its own diff-budget check. Verify every Slurm claim as in CLAUDE.md rule 6.
+Add CHANGELOG entries for any changed default or new variable.
+
+- **T11a** — `defaults/main.yml`: the Debian `SlurmdSpoolDir` is
+  `/var/lib/slurm/slurmctld`, the same directory as `StateSaveLocation`. Use
+  the slurmd spool path that the Debian/Ubuntu package creates. Check the
+  package to confirm it.
+- **T11b** — `defaults/main.yml`: the slurmdbd default key
+  `SlurmctldPidFile` should be `PidFile`. Confirm it in the `slurmdbd.conf`
+  docs.
+- **T11c** — `tasks/slurmdbd_cluster.yml`:
+  - Compare the `sacctmgr` output with `__slurm_cluster_name`, not the
+    literal `"cluster"`.
+  - Make the check task report no change.
+- **T11d** — `templates/logrotate.j2`: use `__slurm_log_dir` instead of
+  hardcoding `/var/log/slurm-llnl` for every Debian-family host.
+- **T11e** — `meta/main.yml`: raise `min_ansible_version` from `"2.5"` to
+  the lowest version the role actually needs. The FQCN module names need
+  2.10 or later; confirm whether anything else needs more.
+- **T11f** — AuthType restart. Changing `AuthType` needs slurmdbd,
+  slurmctld, and slurmd restarted, not reconfigured (scontrol and
+  `slurmdbd.conf` docs).
+  - `slurm.conf` changes already trigger restarts.
+  - Add a "Restart slurmdbd" handler, defined before the slurmctld handlers
+    so the order stays slurmdbd → slurmctld → slurmd.
+  - Make a `slurmdbd.conf` change restart slurmdbd when `AuthType` changes.
+    If that is not practical, restart slurmdbd on every `slurmdbd.conf`
+    change and explain why in the report.
+  - Keep the existing handler names.
+- **T11g** — `slurm.key` for `auth/slurm`. When `AuthType` is `auth/slurm`,
+  install `{{ slurm_config_dir }}/slurm.key`, owned by SlurmUser and mode
+  0600, on every slurmctld, slurmd, and slurmdbd host. Check the Slurm
+  authentication docs first.
+  - Follow the `slurm_munge_key` pattern: a new variable `slurm_key` gives a
+    path on the control node to copy.
+  - If `slurm_key` is unset:
+    - Generate one key once, as random bytes the way the docs describe.
+    - Copy that same key to every host.
+    - Never regenerate it on later runs.
+    - Use `no_log` for the key contents.
+    - Document where the generated key is kept on the control node.
+  - A key change triggers restarts.
+  - Document `slurm_key` in the README and CHANGELOG.
+  - Don't add `slurm.jwks`, key rotation, sackd, or munge removal.
+
+Put new tasks in the existing task files; T11 adds no new files.
+
+T11f and T11g are likely to exceed the ~20-line budget. Stop and explain
+before going over, as CLAUDE.md requires.
+
+**Acceptance:** Each item is committed separately. The syntax check passes,
+and lint is clean on changed lines. If T10's CI exists by then, it passes.
 
 ---
 
@@ -159,7 +236,7 @@ Do not do any of the following, even if they look like improvements:
 - Converting untouched code to FQCN
 - Adding `argument_specs`
 - Adding slurmrestd or JWT support
-- Adding `auth/slurm`
+- Adding `auth/slurm` beyond T11g (no `slurm.jwks`, sackd, key rotation, or munge removal)
 - Adding configless mode
 - Adding new installation sources
 - Adding an upgrade playbook
@@ -279,7 +356,7 @@ Option-level exceptions remain, and none of them is a one-line fix:
 | EL 8 | 20.11.9 | EPEL 8 (packages.fedoraproject.org) |
 | EL 9 | 22.05.11 | EPEL 9 |
 | EL 10 | 26.05.4 (26.05.5 in testing) | EPEL 10.3 / 10.4 |
-| Ubuntu 22.04 | 21.08.5 | universe, `slurm-wlm` (packages.ubuntu.com) |
+| Ubuntu 22.04 | 21.08.5 | universe, `slurm-wlm` (packages.ubuntu.com). Dropped from the target list. |
 | Ubuntu 24.04 | 23.11.4 | universe |
 | Debian 12 | 22.05.8 | main (packages.debian.org) |
 | Debian 13 | 24.11.5 | main |
@@ -287,6 +364,31 @@ Option-level exceptions remain, and none of them is a one-line fix:
 Only EL 10, Ubuntu 24.04, and Debian 13 ship 23.11 or later. Ubuntu 26.04
 (25.11.2) is out but isn't in CLAUDE.md's target list. SchedMD publishes
 source only; it has no distro repos.
+
+### Slurm 23.11 or later for EL 8/9 (researched 2026-10-17)
+
+No source ships 26.05 for EL 8 or 9; EL 10 gets it from EPEL. Candidates:
+
+- **OpenHPC 2.10:** EL 8, Slurm 25.05.x (moved up from 23.11.x).
+  https://openhpc.community/?p=355
+- **OpenHPC 3.5:** EL 9, Slurm 25.11.x (moved up from 24.11.x).
+  https://openhpc.community/news/2026/openhpc-v3-5-release-major-slurm-upgrade-and-library-modernization/
+  The 3.6 Factory build on OBS has 25.11.8, but that isn't a release.
+  Repositories: https://repos.openhpc.community/OpenHPC/ (lines 2, 3, 4).
+- **Rocky SIG/HPC:** `dnf install rocky-release-hpc` on Rocky 8/9. Its wiki
+  lists `slurm22` and `slurm23` packages. Current versions are unconfirmed
+  and the wiki is dated around 2023, so it is not recommended.
+- **Building from source:** `rpmbuild -ta` on the SchedMD tarball, using its
+  `slurm.spec`. This is the upstream method and works for any version.
+- **Third-party repos**, unofficial and not recommended for the role:
+  `jose-d/slurm_for_Rocky9` (EL9, 26.05.4) and
+  `omnivector-solutions/slurm-repo` (Rocky 9, 25.05.1).
+
+The OpenHPC packages have an `-ohpc` suffix (`slurm-ohpc`,
+`slurm-slurmd-ohpc`, ...), so the role's built-in `__slurm_redhat_packages`
+names won't match. Supporting OpenHPC needs a public package-name override.
+That would be a new installation source, which is out of scope until a task
+allows it.
 
 The RedHat package list includes `munge` but not `munge-libs`. The Debian
 list doesn't install `munge` explicitly; it relies on dependencies.
@@ -318,12 +420,14 @@ list doesn't install `munge` explicitly; it relies on dependencies.
   review found no one-line fix.
 - T8: applies, to `meta/main.yml` only. There is no CI matrix.
 - T9: applies.
-- T10: applies, since there are no tests at all.
+- T10: rewritten (2026-10-17) as Molecule in GitHub CI.
+- T11: added (2026-10-17) for pre-existing bugs, AuthType restart, and
+  slurm.key.
 
 ### Future work
 
-- logrotate.j2 hardcodes `/var/log/slurm-llnl` for all Debian-family hosts.
-- An install source for Slurm 23.11 or later on EL 8/9, Ubuntu 22.04, and Debian 12 (out of scope: new installation sources).
+- logrotate.j2 hardcodes `/var/log/slurm-llnl` for all Debian-family hosts. Now covered by T11d.
+- An install source for Slurm 23.11 or later on EL 8/9 and Debian 12 (out of scope: new installation sources). See the EL 8/9 research above; OpenHPC is the best candidate.
 - Ubuntu 26.04 and Debian 13 support, as candidates for the target list.
-- auth/slurm: T3 derives CredType and the slurmdbd AuthType from `slurm_config.AuthType`, but the role neither distributes `slurm.key` (owned by SlurmUser, mode 0600) nor skips munge setup under auth/slurm. Out of scope ("Adding auth/slurm").
+- auth/slurm: T3 derives CredType and the slurmdbd AuthType from `slurm_config.AuthType`, but the role neither distributes `slurm.key` (owned by SlurmUser, mode 0600) nor skips munge setup under auth/slurm. `slurm.key` is now covered by T11g; skipping munge is still out of scope.
 - Removed-parameter guard (T5) covers only keys removed by 23.11. Keys removed later (`AccountingStorageUser` 25.11; `GetEnvTimeout`, `CoreSpecPlugin`, `PowerPlugin`, `PowerParameters` defunct in 26.05) need version gating, but `__slurm_version` is only set after config templating.
