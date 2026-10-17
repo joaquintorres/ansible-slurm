@@ -21,6 +21,9 @@
         - name: Install the OpenHPC release package (OpenHPC 2/3/4 for EL 8/9/10)
           ansible.builtin.dnf:
             name: "https://repos.openhpc.community/OpenHPC/{{ __ohpc }}/EL_{{ __el }}/x86_64/ohpc-release-{{ __ohpc }}-1.el{{ __el }}.x86_64.rpm"
+            # This package carries the OpenHPC key, so it can't be verified first. dnf's own
+            # default (localpkg_gpgcheck=False) skips the check too; repo packages stay verified.
+            disable_gpg_check: true
           vars:
             __el: "{{ ansible_distribution_major_version }}"
             __ohpc: "{{ (__el | int) - 6 }}"
