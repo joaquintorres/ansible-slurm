@@ -1,0 +1,21 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Wait for the node to be idle
+      ansible.builtin.command: sinfo -h -o %t
+      register: __sinfo
+      changed_when: false
+      until: __sinfo.stdout == 'idle'
+      retries: 30
+      delay: 2
+
+    - name: Run a job
+      ansible.builtin.command: srun -N1 hostname
+      register: __srun
+      changed_when: false
+
+    - name: Check the job ran on the node
+      ansible.builtin.assert:
+        that: __srun.stdout == inventory_hostname

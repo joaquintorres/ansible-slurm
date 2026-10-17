@@ -1,0 +1,29 @@
+---
+- name: Create
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Start systemd containers
+      community.docker.docker_container:
+        name: "{{ item.name }}"
+        hostname: "{{ item.hostname }}"
+        image: "{{ item.image }}"
+        command: /lib/systemd/systemd
+        privileged: true
+        cgroupns_mode: host
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+        state: started
+      loop: "{{ molecule_yml.platforms }}"
+
+    - name: Write instance config
+      ansible.builtin.copy:
+        content: |
+          {% for p in molecule_yml.platforms %}
+          - instance: {{ p.name }}
+            address: {{ p.name }}
+            connection: community.docker.docker
+          {% endfor %}
+        dest: "{{ molecule_instance_config }}"
+        mode: "0600"

@@ -141,7 +141,7 @@ default and explains the removed-parameter guard. Keep it under 30 lines.
 
 ---
 
-## [ ] T10 — Optional: smoke test
+## [ ] T10 — Optional: smoke test — written, not yet run: no Docker in the authoring environment
 
 Do this only if there are no tests at all. Add a single Molecule scenario
 that runs a one-node, all-in-one cluster in a systemd-capable container,

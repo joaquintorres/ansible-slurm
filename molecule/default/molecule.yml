@@ -1,0 +1,20 @@
+---
+# One-node smoke test: controller + exec on Ubuntu 24.04 (Slurm 23.11 from universe).
+# Requires Docker and the community.docker collection.
+driver:
+  name: default
+  options:
+    managed: true
+platforms:
+  - name: slurm-aio
+    image: geerlingguy/docker-ubuntu2404-ansible:latest
+    hostname: slurm-aio
+scenario:
+  test_sequence:
+    - destroy
+    - syntax
+    - create
+    - converge
+    - idempotence
+    - verify
+    - destroy

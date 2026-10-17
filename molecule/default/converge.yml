@@ -1,0 +1,12 @@
+---
+- name: Converge
+  hosts: all
+  vars:
+    slurm_roles: [controller, exec]
+    slurm_config:
+      SlurmctldHost: "{{ ansible_hostname }}"
+    slurm_nodes:
+      - name: "{{ ansible_hostname }}"
+        State: UNKNOWN
+  roles:
+    - role: galaxyproject.slurm
