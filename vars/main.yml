@@ -1,0 +1,18 @@
+---
+
+# Keys (or Key=value) removed by Slurm 23.11, mapped to their replacement (null if none)
+__slurm_removed_params:
+  SelectType=select/cons_res: SelectType=select/cons_tres
+  FastSchedule: SlurmdParameters=config_overrides
+  ExtSensorsType: null
+  ExtSensorsFreq: null
+  JobCredentialPrivateKey: null
+  JobCredentialPublicCertificate: null
+  SchedulerAuth: null
+  CgroupAutomount: null
+  CgroupReleaseAgentDir: null
+  TaskAffinity: null
+  AllowedKmemSpace: null
+  ConstrainKmemSpace: null
+  MaxKmemPercent: null
+  MinKmemSpace: null

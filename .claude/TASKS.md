@@ -84,7 +84,7 @@ Leave user-supplied keys untouched; T5 guards those.
 
 ---
 
-## [ ] T5 — Guard against removed parameters
+## [x] T5 — Guard against removed parameters
 
 Add one dict to the existing `vars/main.yml`, named
 `__slurm_removed_params`. It maps each removed key to its replacement, or to
@@ -319,3 +319,4 @@ list doesn't install `munge` explicitly; it relies on dependencies.
 - An install source for Slurm 23.11 or later on EL 8/9, Ubuntu 22.04, and Debian 12 (out of scope: new installation sources).
 - Ubuntu 26.04 and Debian 13 support, as candidates for the target list.
 - auth/slurm: T3 derives CredType and the slurmdbd AuthType from `slurm_config.AuthType`, but the role neither distributes `slurm.key` (owned by SlurmUser, mode 0600) nor skips munge setup under auth/slurm. Out of scope ("Adding auth/slurm").
+- Removed-parameter guard (T5) covers only keys removed by 23.11. Keys removed later (`AccountingStorageUser` 25.11; `GetEnvTimeout`, `CoreSpecPlugin`, `PowerPlugin`, `PowerParameters` defunct in 26.05) need version gating, but `__slurm_version` is only set after config templating.

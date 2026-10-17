@@ -1,5 +1,17 @@
 ---
 
+- name: Check for removed Slurm parameters
+  ansible.builtin.assert:
+    that: __slurm_removed_found | length == 0
+    fail_msg: >-
+      Removed Slurm parameters set:
+      {% for k in __slurm_removed_found %}{{ k }} (replace with {{ __slurm_removed_params[k] | default('nothing, remove it', true) }}); {% endfor %}
+    quiet: true
+  vars:
+    __slurm_user_conf: "{{ (slurm_config | default({})) | combine(slurm_cgroup_config | default({}), slurmdbd_config | default({})) }}"
+    __slurm_user_pairs: "{{ __slurm_user_conf.keys() | zip(__slurm_user_conf.values() | map('string')) | map('join', '=') | list }}"
+    __slurm_removed_found: "{{ __slurm_removed_params | select('in', __slurm_user_conf.keys() | list + __slurm_user_pairs) | list }}"
+
 - name: Include user creation tasks
   ansible.builtin.include_tasks: user.yml
   when: slurm_create_user

@@ -15,3 +15,11 @@
 - `slurmdbd.conf`: the default `AuthType` now follows the `slurm.conf`
   `AuthType` (still `auth/munge` unless you change it). Values set in
   `slurmdbd_config` still take precedence.
+
+### Added
+
+- The role now fails early, before writing any config file, if `slurm_config`,
+  `slurm_cgroup_config`, or `slurmdbd_config` sets a parameter removed by
+  Slurm 23.11 (for example `SelectType: select/cons_res`, `FastSchedule`, or
+  `CgroupAutomount`). The message names the replacement, if there is one.
+  The list is `__slurm_removed_params` in `vars/main.yml`.
