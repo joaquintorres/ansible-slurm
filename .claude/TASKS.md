@@ -256,9 +256,10 @@ Package names are the same in all three: `slurm-ohpc`, `slurm-slurmctld-ohpc`,
   dir, StateSaveLocation, SlurmdSpoolDir, log and pid files, and the systemd
   unit names. If they differ, stop and report before adding more overrides.
 - `__slurm_version` (T1) should read 25.05 or 25.11 on these hosts.
-- Switch T10's `el10` CI job to OpenHPC 4: set up the repo in `prepare.yml`,
-  set `slurm_package_source: openhpc`, and remove its `continue-on-error`.
-  Optionally add an EL 9 + OpenHPC 3 job.
+- Make T10's `el10` CI job required (no `continue-on-error`) and add an
+  EL 9 + OpenHPC 3 job. Decided 2026-10-17: el10 uses EPEL, adding EPEL 10.3
+  in `prepare.yml` while the host is older than 10.3, because OpenHPC 4.1's
+  EL 10 build lacks `auth/slurm`.
 
 Covers EL 8, 9, and 10. This lifts the "new installation sources" exclusion
 for OpenHPC only.
@@ -499,7 +500,7 @@ list doesn't install `munge` explicitly; it relies on dependencies.
   AuthType and `srun hostname`) and with auth/munge (key tasks skipped).
   el10 still fails on "No package slurm available" (T12).
 - T12: implemented (2026-10-17); box stays unchecked until the el9-openhpc
-  and el10-openhpc CI jobs pass.
+  and el10 (EPEL 10.3) CI jobs pass.
 
 ### Future work
 

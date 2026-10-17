@@ -18,6 +18,16 @@
           ansible.builtin.command: dnf config-manager --set-enabled crb
           changed_when: false
 
+        # Slurm is only in EPEL 10.3+ (26.05 with auth/slurm); drop once Rocky 10.3 is out
+        - name: Add EPEL 10.3 on EL 10 hosts older than 10.3
+          ansible.builtin.yum_repository:
+            name: epel-10.3
+            description: EPEL 10.3
+            baseurl: https://dl.fedoraproject.org/pub/epel/10.3/Everything/$basearch/
+            gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-10
+            gpgcheck: true
+          when: ansible_distribution_major_version == '10' and ansible_distribution_version is version('10.3', '<')
+
         - name: Install the OpenHPC release package (OpenHPC 2/3/4 for EL 8/9/10)
           ansible.builtin.dnf:
             name: "https://repos.openhpc.community/OpenHPC/{{ __ohpc }}/EL_{{ __el }}/x86_64/ohpc-release-{{ __ohpc }}-1.el{{ __el }}.x86_64.rpm"

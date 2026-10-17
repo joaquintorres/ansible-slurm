@@ -20,15 +20,15 @@ jobs:
           - platform: ubuntu2404
             image: geerlingguy/docker-ubuntu2404-ansible:latest
             auth: auth/munge
-          # EPEL has no Slurm for EL 9 >= 23.11 or for released EL 10 (10.2); use OpenHPC
+          # EPEL 9 has Slurm 22.05; OpenHPC 3 has 25.11 with auth/slurm
           - platform: el9-openhpc
             image: geerlingguy/docker-rockylinux9-ansible:latest
             auth: auth/slurm
             package_source: openhpc
-          - platform: el10-openhpc
+          # EPEL 10.3 has 26.05; OpenHPC 4.1's EL 10 build lacks auth/slurm
+          - platform: el10
             image: geerlingguy/docker-rockylinux10-ansible:latest
             auth: auth/slurm
-            package_source: openhpc
     steps:
       - uses: actions/checkout@v6
 
