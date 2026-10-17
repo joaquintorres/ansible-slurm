@@ -5,6 +5,17 @@
     name: "{{ __slurm_packages.client }}"
     state: "{{ 'latest' if slurm_upgrade else 'present' }}"
 
+- name: Get installed Slurm version
+  ansible.builtin.command: scontrol --version
+  register: __slurm_version_cmd
+  changed_when: false
+  check_mode: false
+  failed_when: __slurm_version_cmd.rc != 0 and not ansible_check_mode
+
+- name: Set installed Slurm version fact
+  ansible.builtin.set_fact:
+    __slurm_version: "{{ __slurm_version_cmd.stdout | default('') | regex_search('[0-9]+\\.[0-9]+') | default('0', true) }}"
+
 - name: Include config dir creation tasks
   ansible.builtin.include_tasks: _inc_create_config_dir.yml
   when: slurm_create_dirs

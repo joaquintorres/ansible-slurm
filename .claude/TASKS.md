@@ -30,7 +30,7 @@ apply, mark it `N/A` with a one-line reason.
 
 ---
 
-## [ ] T1 — Installed version fact
+## [x] T1 — Installed version fact
 
 After the package install, set a fact `__slurm_version` (for example,
 `"26.05"`).
