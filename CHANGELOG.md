@@ -41,3 +41,5 @@
 - Debian/Ubuntu: the default `SlurmdSpoolDir` is now `/var/lib/slurm/slurmd`,
   the directory the Debian `slurmd` package creates. It was
   `/var/lib/slurm/slurmctld`, the same directory as `StateSaveLocation`.
+- `slurmdbd.conf`: the default PID file key is now `PidFile`. It was
+  `SlurmctldPidFile`, which slurmdbd doesn't recognize.
