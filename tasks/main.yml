@@ -1,5 +1,11 @@
 ---
 
+- name: Check slurm_package_source
+  ansible.builtin.assert:
+    that: slurm_package_source == 'distro' or (slurm_package_source == 'openhpc' and __slurm_redhat)
+    fail_msg: "slurm_package_source must be 'distro', or 'openhpc' on EL hosts; got '{{ slurm_package_source }}'"
+    quiet: true
+
 - name: Check for removed Slurm parameters
   ansible.builtin.assert:
     that: __slurm_removed_found | length == 0

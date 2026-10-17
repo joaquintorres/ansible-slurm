@@ -245,7 +245,8 @@ Package names are the same in all three: `slurm-ohpc`, `slurm-slurmctld-ohpc`,
 
 - Add one public variable, `slurm_package_source`, with values `distro`
   (the default, unchanged behaviour) and `openhpc`. Validate it.
-- Put the OpenHPC package map in `vars/main.yml`, next to the existing maps.
+- Put the OpenHPC package map in `defaults/main.yml`, next to the existing maps
+  (corrected 2026-10-17: the maps live in defaults, not vars).
   Make `__slurm_packages` choose it when `slurm_package_source` is
   `openhpc`. This is data, not new tasks.
 - The role doesn't set up the OpenHPC repository; the user does. Document it
@@ -477,6 +478,8 @@ list doesn't install `munge` explicitly; it relies on dependencies.
   generated, then unchanged on the idempotence run; verify confirmed
   AuthType and `srun hostname`) and with auth/munge (key tasks skipped).
   el10 still fails on "No package slurm available" (T12).
+- T12: implemented (2026-10-17); box stays unchecked until the el9-openhpc
+  and el10-openhpc CI jobs pass.
 
 ### Future work
 

@@ -67,3 +67,12 @@
   it changes. If `slurm_key` is unset, it generates the key once on the control
   node as `slurm.key` next to the playbook (1024 random bytes, as in the Slurm
   authentication docs) and never regenerates an existing file.
+
+### Added (OpenHPC)
+
+- New variable `slurm_package_source`: `distro` (default, unchanged) or
+  `openhpc`. With `openhpc`, EL hosts install OpenHPC's `slurm-ohpc`,
+  `slurm-slurmctld-ohpc`, `slurm-slurmd-ohpc`, and `slurm-slurmdbd-ohpc`
+  instead of EPEL's packages: OpenHPC 2 (EL 8, Slurm 25.05), 3 (EL 9, 25.11),
+  or 4 (EL 10, 25.05). The role checks the value and rejects `openhpc` on
+  non-EL hosts. It doesn't set up the OpenHPC repository; see the README.

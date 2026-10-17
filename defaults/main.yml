@@ -1,6 +1,8 @@
 ---
 
 slurm_upgrade: false
+# distro or openhpc (EL only; the OpenHPC repo must already be enabled)
+slurm_package_source: distro
 slurm_roles: []
 slurm_partitions: []
 slurm_nodes: []
@@ -88,7 +90,16 @@ __slurm_redhat_packages:
   slurmd: [munge, slurm, slurm-slurmd]
   slurmdbd: [munge, slurm-slurmdbd]
 
-__slurm_packages: "{{ __slurm_debian_packages if __slurm_debian else __slurm_redhat_packages }}"
+# OpenHPC 2.x (EL 8), 3.x (EL 9), 4.x (EL 10); same names in all three
+__slurm_openhpc_packages:
+  client: [slurm-ohpc, munge]
+  slurmctld: [munge, slurm-ohpc, slurm-slurmctld-ohpc]
+  slurmd: [munge, slurm-ohpc, slurm-slurmd-ohpc]
+  slurmdbd: [munge, slurm-slurmdbd-ohpc]
+
+__slurm_packages: >-
+  {{ __slurm_openhpc_packages if slurm_package_source == 'openhpc' else
+     (__slurm_debian_packages if __slurm_debian else __slurm_redhat_packages) }}
 
 __slurmdbd_config_default:
   AuthType: "{{ __slurm_config_merged.AuthType }}"

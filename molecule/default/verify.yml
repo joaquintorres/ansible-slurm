@@ -12,6 +12,15 @@
       ansible.builtin.assert:
         that: __config.stdout is search('AuthType\\s*=\\s*' ~ (lookup('env', 'MOLECULE_SLURM_AUTH') | default('auth/slurm', true)))
 
+    - name: Read the installed Slurm version
+      ansible.builtin.command: scontrol --version
+      register: __version
+      changed_when: false
+
+    - name: Show the installed Slurm version
+      ansible.builtin.debug:
+        msg: "{{ __version.stdout }}"
+
     - name: Wait for the node to be idle
       ansible.builtin.command: sinfo -h -o %t
       register: __sinfo

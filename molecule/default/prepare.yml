@@ -18,6 +18,14 @@
           ansible.builtin.command: dnf config-manager --set-enabled crb
           changed_when: false
 
+        - name: Install the OpenHPC release package (OpenHPC 2/3/4 for EL 8/9/10)
+          ansible.builtin.dnf:
+            name: "https://repos.openhpc.community/OpenHPC/{{ __ohpc }}/EL_{{ __el }}/x86_64/ohpc-release-{{ __ohpc }}-1.el{{ __el }}.x86_64.rpm"
+          vars:
+            __el: "{{ ansible_distribution_major_version }}"
+            __ohpc: "{{ (__el | int) - 6 }}"
+          when: lookup('env', 'MOLECULE_PACKAGE_SOURCE') == 'openhpc'
+
     # The role only copies a key given in slurm_munge_key; EL's munge package doesn't create one
     - name: Install munge
       ansible.builtin.package:

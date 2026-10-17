@@ -3,6 +3,7 @@
   hosts: all
   vars:
     slurm_roles: [controller, exec]
+    slurm_package_source: "{{ lookup('env', 'MOLECULE_PACKAGE_SOURCE') | default('distro', true) }}"
     slurm_config:
       SlurmctldHost: "{{ ansible_hostname }}"
       # auth/slurm by default; slurm.key is generated next to this playbook

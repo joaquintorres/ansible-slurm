@@ -8,7 +8,17 @@ Supported Versions
 
 Slurm 23.11 or newer, with 26.05 as the primary target, installed from the distribution's packages on EL 8/9/10
 (from EPEL) and Ubuntu 24.04. Of these, only Ubuntu 24.04 currently ships Slurm 23.11 or newer: EPEL has Slurm 20.11 for
-EL 8 and 22.05 for EL 9, and none for EL 10 before 10.3. On EL, provide newer packages through your own repository.
+EL 8 and 22.05 for EL 9, and none for EL 10 before 10.3. On EL, set `slurm_package_source: openhpc` to install
+OpenHPC's packages (Slurm 25.05 on EL 8 and EL 10, 25.11 on EL 9), or provide newer packages through your own repository.
+
+The role doesn't configure the OpenHPC repository. Before running it, enable EPEL and PowerTools (EL 8) or CRB
+(EL 9, EL 10), then install the matching `ohpc-release` package:
+
+```sh
+dnf install https://repos.openhpc.community/OpenHPC/2/EL_8/x86_64/ohpc-release-2-1.el8.x86_64.rpm     # EL 8
+dnf install https://repos.openhpc.community/OpenHPC/3/EL_9/x86_64/ohpc-release-3-1.el9.x86_64.rpm     # EL 9
+dnf install https://repos.openhpc.community/OpenHPC/4/EL_10/x86_64/ohpc-release-4-1.el10.x86_64.rpm  # EL 10
+```
 
 Upgrading from Previous Versions
 --------------------------------

@@ -10,8 +10,6 @@ jobs:
   molecule:
     name: molecule (${{ matrix.platform }}, ${{ matrix.auth }})
     runs-on: ubuntu-24.04
-    # EPEL has no Slurm for released EL 10 (10.2); el10 moves to OpenHPC 4 in T12
-    continue-on-error: ${{ matrix.experimental }}
     strategy:
       fail-fast: false
       matrix:
@@ -19,15 +17,18 @@ jobs:
           - platform: ubuntu2404
             image: geerlingguy/docker-ubuntu2404-ansible:latest
             auth: auth/slurm
-            experimental: false
           - platform: ubuntu2404
             image: geerlingguy/docker-ubuntu2404-ansible:latest
             auth: auth/munge
-            experimental: false
-          - platform: el10
+          # EPEL has no Slurm for EL 9 >= 23.11 or for released EL 10 (10.2); use OpenHPC
+          - platform: el9-openhpc
+            image: geerlingguy/docker-rockylinux9-ansible:latest
+            auth: auth/slurm
+            package_source: openhpc
+          - platform: el10-openhpc
             image: geerlingguy/docker-rockylinux10-ansible:latest
             auth: auth/slurm
-            experimental: true
+            package_source: openhpc
     steps:
       - uses: actions/checkout@v6
 
@@ -45,5 +46,6 @@ jobs:
         env:
           MOLECULE_IMAGE: ${{ matrix.image }}
           MOLECULE_SLURM_AUTH: ${{ matrix.auth }}
+          MOLECULE_PACKAGE_SOURCE: ${{ matrix.package_source }}
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
