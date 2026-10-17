@@ -109,7 +109,7 @@ only the existing template task's `mode` and `owner`.
 
 ---
 
-## [ ] T7 — Handler order
+## [x] T7 — Handler order
 
 Reorder the existing handler definitions so restarts run in this order:
 slurmdbd, then slurmctld, then slurmd. Move blocks only; don't edit them.
@@ -247,9 +247,16 @@ Notify targets:
 - `cgroup.conf` / `gres.conf` / `acct_gather.conf`: Reload.
 - `slurmdbd.conf` and cluster creation: Reload slurmdbd.
 
-Possible mismatch, not yet verified against docs: `gres.conf` changes may
-need a slurmd restart rather than a reconfigure. T7 can check this.
-**T7's reorder is N/A**, but its review part still applies.
+T7 review (checked against the 26.05.5 man pages and systemd units): every
+"Reload" handler sends SIGHUP (`ExecReload=/bin/kill -HUP $MAINPID`). The
+`gres.conf`, `cgroup.conf`, and `acct_gather.conf` docs say changes take
+effect on SIGHUP or `scontrol reconfigure`, so Reload is correct for them.
+Restart is a safe superset for `slurm.conf`. No one-line fix is needed.
+Option-level exceptions remain, and none of them is a one-line fix:
+- `gres.conf` `Cores` and `Type` need a slurmctld (and slurmd) restart.
+- A slurmdbd `AuthType` change needs a restart, and there is no "Restart
+  slurmdbd" handler.
+- `scontrol reconfigure` can't change ports or `AuthType` (23.11+).
 
 ### slurmdbd.conf
 
@@ -307,8 +314,8 @@ list doesn't install `munge` explicitly; it relies on dependencies.
 - T4: N/A. There are no default `cgroup.conf` keys.
 - T5: blocked. `vars/main.yml` doesn't exist.
 - T6: N/A. It is already mode 0600 and owned by the Slurm user.
-- T7: N/A for the reorder. The review part (handler type per file) is still
-  open.
+- T7: done with no handler changes. They were already in order, and the
+  review found no one-line fix.
 - T8: applies, to `meta/main.yml` only. There is no CI matrix.
 - T9: applies.
 - T10: applies, since there are no tests at all.
