@@ -43,3 +43,7 @@
   `/var/lib/slurm/slurmctld`, the same directory as `StateSaveLocation`.
 - `slurmdbd.conf`: the default PID file key is now `PidFile`. It was
   `SlurmctldPidFile`, which slurmdbd doesn't recognize.
+- The slurmdbd cluster check now looks for `__slurm_cluster_name` in
+  `sacctmgr -n -P list cluster format=Cluster` and no longer reports a change
+  on every run. It used to compare the fourth space-separated field with the
+  literal `"cluster"`.
