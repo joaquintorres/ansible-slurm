@@ -230,7 +230,7 @@ and lint is clean on changed lines. If T10's CI exists by then, it passes.
 
 ---
 
-## [ ] T12 — OpenHPC packages on EL 8/9/10
+## [x] T12 — OpenHPC packages on EL 8/9/10
 
 EPEL ships Slurm 20.11 (EL 8) and 22.05 (EL 9), both below 23.11. OpenHPC
 ships newer versions (checked in the repo indexes on 2026-10-17):
@@ -508,8 +508,9 @@ list doesn't install `munge` explicitly; it relies on dependencies.
   generated, then unchanged on the idempotence run; verify confirmed
   AuthType and `srun hostname`) and with auth/munge (key tasks skipped).
   el10 still fails on "No package slurm available" (T12).
-- T12: implemented (2026-10-17); box stays unchecked until the el9-openhpc
-  and el10 (EPEL 10.3) CI jobs pass.
+- T12: done (2026-10-17). CI at 5843cee passed, per the user: el9-openhpc
+  (OpenHPC 3, auth/slurm) and el10 (EPEL via the epel-10 metalink, auth/slurm),
+  plus both ubuntu2404 jobs.
 
 ### Future work
 
