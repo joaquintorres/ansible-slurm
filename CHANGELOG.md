@@ -29,3 +29,8 @@
 - `meta/main.yml` now lists EL 8/9/10 and Ubuntu 22.04 (jammy) / 24.04 (noble)
   instead of "all" for EL, Fedora, Ubuntu, and Debian. Debian and Fedora are
   no longer declared, but the Debian code paths are unchanged.
+
+### Documentation
+
+- The README lists supported versions and adds upgrade notes. The README
+  example no longer sets the removed `CgroupAutomount` and `TaskAffinity`.

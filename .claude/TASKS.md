@@ -131,7 +131,7 @@ to the supported OS list in CLAUDE.md. Don't add new CI systems.
 
 ---
 
-## [ ] T9 — Docs
+## [x] T9 — Docs
 
 In the README, update the supported Slurm and OS versions and add a short
 "Upgrading from previous versions" note. That note lists each changed

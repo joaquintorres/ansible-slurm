@@ -1,7 +1,30 @@
 Slurm
 =====
 
-Install and configure a Slurm cluster on RHEL/CentOS or Debian/Ubuntu servers
+Install and configure a Slurm cluster on Enterprise Linux or Ubuntu servers
+
+Supported Versions
+------------------
+
+Slurm 23.11 or newer, with 26.05 as the primary target, installed from the distribution's packages on EL 8/9/10
+(from EPEL) and Ubuntu 22.04/24.04. Only EL 10 and Ubuntu 24.04 ship Slurm 23.11 or newer. On EL 8, EL 9, and
+Ubuntu 22.04 (Slurm 20.11, 22.05, and 21.08), provide newer packages through your own repository.
+
+Upgrading from Previous Versions
+--------------------------------
+
+These defaults changed (see [CHANGELOG](CHANGELOG.md)):
+
+- The fallback controller line is `SlurmctldHost=localhost` instead of `ControlMachine=localhost`. It is
+  written only when you set neither key.
+- `CryptoType: crypto/munge` is replaced by `CredType`. It is `cred/munge`, or `cred/slurm` when
+  `slurm_config.AuthType` is `auth/slurm`. If you set `CryptoType` yourself, switch to `CredType`.
+- `slurmdbd.conf`'s default `AuthType` follows `slurm.conf`'s `AuthType`.
+
+The role now stops before writing any config file if `slurm_config`, `slurm_cgroup_config`, or `slurmdbd_config`
+sets a parameter that Slurm removed by 23.11, such as `SelectType: select/cons_res`, `FastSchedule`,
+`CgroupAutomount`, or `TaskAffinity`. The error names the replacement key, if there is one. Remove or
+replace those keys before upgrading. The full list is `__slurm_removed_params` in [vars/main.yml](vars/main.yml).
 
 Role Variables
 --------------
@@ -65,9 +88,7 @@ More extensive example:
   vars:
     slurm_cgroup_config:
       CgroupMountpoint: "/sys/fs/cgroup"
-      CgroupAutomount: yes
       ConstrainCores: yes
-      TaskAffinity: no
       ConstrainRAMSpace: yes
       ConstrainSwapSpace: no
       ConstrainDevices: no
