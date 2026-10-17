@@ -153,9 +153,10 @@ the authoring environment. Make it run in GitHub Actions:
 - The workflow installs `ansible-core`, `molecule`, the `community.docker`
   collection, and the Docker SDK for Python. Pin action and tool versions.
 - Run one matrix job per platform:
-  - Ubuntu 24.04 (Slurm 23.11 from universe).
-  - EL 10 (Rocky or Alma 10 with EPEL, Slurm 26.05). 26.05 is the priority
-    version.
+  - Ubuntu 24.04 (Slurm 23.11 from universe). This job is required.
+  - EL 10 (Rocky 10). It is allowed to fail (`continue-on-error`) until T12
+    switches it to OpenHPC 4. EPEL has no Slurm for released EL 10 (10.2);
+    only EPEL 10.3/10.4 have 26.05.
 
   Select the image per job, for example through an environment variable
   read in `molecule.yml`. EPEL setup goes in `molecule/default/prepare.yml`,
@@ -165,8 +166,8 @@ the authoring environment. Make it run in GitHub Actions:
 
 New files are allowed in `.github/workflows/` and `molecule/` only.
 
-**Acceptance:** The workflow passes on GitHub for every platform, including
-the `srun hostname` verify step. Link the run in the report. If you can't
+**Acceptance:** The Ubuntu 24.04 job passes on GitHub, including the
+`srun hostname` verify step. Link the run in the report. If you can't
 push or run it from this environment, say so and leave the box unchecked.
 
 ---
@@ -229,15 +230,17 @@ and lint is clean on changed lines. If T10's CI exists by then, it passes.
 
 ---
 
-## [ ] T12 — OpenHPC packages on EL 8/9
+## [ ] T12 — OpenHPC packages on EL 8/9/10
 
 EPEL ships Slurm 20.11 (EL 8) and 22.05 (EL 9), both below 23.11. OpenHPC
 ships newer versions (checked in the repo indexes on 2026-10-17):
 
 - OpenHPC 2.11, EL 8: Slurm 25.05.9.
 - OpenHPC 3.6, EL 9: Slurm 25.11.8.
+- OpenHPC 4.1, EL 10: Slurm 25.05.7. EPEL has no Slurm for EL 10.2, so on
+  released EL 10 this is the only packaged source.
 
-Package names are the same in both: `slurm-ohpc`, `slurm-slurmctld-ohpc`,
+Package names are the same in all three: `slurm-ohpc`, `slurm-slurmctld-ohpc`,
 `slurm-slurmd-ohpc`, `slurm-slurmdbd-ohpc` (plus `munge`).
 
 - Add one public variable, `slurm_package_source`, with values `distro`
@@ -252,10 +255,12 @@ Package names are the same in both: `slurm-ohpc`, `slurm-slurmctld-ohpc`,
   dir, StateSaveLocation, SlurmdSpoolDir, log and pid files, and the systemd
   unit names. If they differ, stop and report before adding more overrides.
 - `__slurm_version` (T1) should read 25.05 or 25.11 on these hosts.
-- If T10's CI exists, add an EL 9 + OpenHPC platform and set up the repo in
-  `prepare.yml`.
+- Switch T10's `el10` CI job to OpenHPC 4: set up the repo in `prepare.yml`,
+  set `slurm_package_source: openhpc`, and remove its `continue-on-error`.
+  Optionally add an EL 9 + OpenHPC 3 job.
 
-This lifts the "new installation sources" exclusion for OpenHPC only.
+Covers EL 8, 9, and 10. This lifts the "new installation sources" exclusion
+for OpenHPC only.
 Don't add other sources, building from source, or repo management in the
 role.
 

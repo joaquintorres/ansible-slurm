@@ -10,14 +10,18 @@ jobs:
   molecule:
     name: molecule (${{ matrix.platform }})
     runs-on: ubuntu-24.04
+    # EPEL has no Slurm for released EL 10 (10.2); el10 moves to OpenHPC 4 in T12
+    continue-on-error: ${{ matrix.experimental }}
     strategy:
       fail-fast: false
       matrix:
         include:
           - platform: ubuntu2404
             image: geerlingguy/docker-ubuntu2404-ansible:latest
+            experimental: false
           - platform: el10
             image: geerlingguy/docker-rockylinux10-ansible:latest
+            experimental: true
     steps:
       - uses: actions/checkout@v6
 
