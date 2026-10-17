@@ -141,7 +141,7 @@ default and explains the removed-parameter guard. Keep it under 30 lines.
 
 ---
 
-## [ ] T10 — Molecule in GitHub CI
+## [x] T10 — Molecule in GitHub CI
 
 A Molecule scenario already exists in `molecule/default/` (commit 6ce62b8).
 It runs a one-node controller and exec setup on Ubuntu 24.04, and its verify
@@ -462,7 +462,12 @@ list doesn't install `munge` explicitly; it relies on dependencies.
   review found no one-line fix.
 - T8: applies, to `meta/main.yml` only. There is no CI matrix.
 - T9: applies.
-- T10: rewritten (2026-10-17) as Molecule in GitHub CI.
+- T10: rewritten (2026-10-17) as Molecule in GitHub CI. Done: the molecule
+  workflow at commit 6c9abb0 passed on ubuntu2404 (converge,
+  idempotence, and verify with `srun hostname`). el10 failed as expected
+  ("No package slurm-slurmctld available") and is allowed to fail until T12.
+  The first run also found a T1 bug (scontrol needs slurm.conf even for
+  `--version`), fixed in 56003af.
 - T11: added (2026-10-17) for pre-existing bugs, AuthType restart, and
   slurm.key.
 
