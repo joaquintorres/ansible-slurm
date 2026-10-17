@@ -229,6 +229,42 @@ and lint is clean on changed lines. If T10's CI exists by then, it passes.
 
 ---
 
+## [ ] T12 — OpenHPC packages on EL 8/9
+
+EPEL ships Slurm 20.11 (EL 8) and 22.05 (EL 9), both below 23.11. OpenHPC
+ships newer versions (checked in the repo indexes on 2026-10-17):
+
+- OpenHPC 2.11, EL 8: Slurm 25.05.9.
+- OpenHPC 3.6, EL 9: Slurm 25.11.8.
+
+Package names are the same in both: `slurm-ohpc`, `slurm-slurmctld-ohpc`,
+`slurm-slurmd-ohpc`, `slurm-slurmdbd-ohpc` (plus `munge`).
+
+- Add one public variable, `slurm_package_source`, with values `distro`
+  (the default, unchanged behaviour) and `openhpc`. Validate it.
+- Put the OpenHPC package map in `vars/main.yml`, next to the existing maps.
+  Make `__slurm_packages` choose it when `slurm_package_source` is
+  `openhpc`. This is data, not new tasks.
+- The role doesn't set up the OpenHPC repository; the user does. Document it
+  in the README: the `ohpc-release` RPM, EPEL, and PowerTools/CRB. Use the
+  OpenHPC install guide for the exact URLs and confirm them.
+- Check that the OpenHPC packages' paths match the RedHat defaults: config
+  dir, StateSaveLocation, SlurmdSpoolDir, log and pid files, and the systemd
+  unit names. If they differ, stop and report before adding more overrides.
+- `__slurm_version` (T1) should read 25.05 or 25.11 on these hosts.
+- If T10's CI exists, add an EL 9 + OpenHPC platform and set up the repo in
+  `prepare.yml`.
+
+This lifts the "new installation sources" exclusion for OpenHPC only.
+Don't add other sources, building from source, or repo management in the
+role.
+
+**Acceptance:** With the default, behaviour is unchanged. With `openhpc`,
+the package tasks install the `-ohpc` packages. README and CHANGELOG
+document the variable and the repo setup.
+
+---
+
 ## Out of scope
 
 Do not do any of the following, even if they look like improvements:
@@ -238,7 +274,7 @@ Do not do any of the following, even if they look like improvements:
 - Adding slurmrestd or JWT support
 - Adding `auth/slurm` beyond T11g (no `slurm.jwks`, sackd, key rotation, or munge removal)
 - Adding configless mode
-- Adding new installation sources
+- Adding new installation sources (except OpenHPC, in T12)
 - Adding an upgrade playbook
 - Templating new config files
 - Refactoring
@@ -369,11 +405,12 @@ source only; it has no distro repos.
 
 No source ships 26.05 for EL 8 or 9; EL 10 gets it from EPEL. Candidates:
 
-- **OpenHPC 2.10:** EL 8, Slurm 25.05.x (moved up from 23.11.x).
+- **OpenHPC 2.10 / 2.11:** EL 8. The 2.11 repo index has Slurm 25.05.9 (2.10
+  moved from 23.11.x to 25.05.x).
   https://openhpc.community/?p=355
 - **OpenHPC 3.5:** EL 9, Slurm 25.11.x (moved up from 24.11.x).
   https://openhpc.community/news/2026/openhpc-v3-5-release-major-slurm-upgrade-and-library-modernization/
-  The 3.6 Factory build on OBS has 25.11.8, but that isn't a release.
+  The `update.3.6` repo index now has 25.11.8.
   Repositories: https://repos.openhpc.community/OpenHPC/ (lines 2, 3, 4).
 - **Rocky SIG/HPC:** `dnf install rocky-release-hpc` on Rocky 8/9. Its wiki
   lists `slurm22` and `slurm23` packages. Current versions are unconfirmed
