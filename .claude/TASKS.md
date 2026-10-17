@@ -473,7 +473,10 @@ list doesn't install `munge` explicitly; it relies on dependencies.
   The first run also found a T1 bug (scontrol needs slurm.conf even for
   `--version`), fixed in 56003af.
 - T11: added (2026-10-17) for pre-existing bugs, AuthType restart, and
-  slurm.key.
+  slurm.key. Done: CI at e0b6713 passed ubuntu2404 with auth/slurm (slurm.key
+  generated, then unchanged on the idempotence run; verify confirmed
+  AuthType and `srun hostname`) and with auth/munge (key tasks skipped).
+  el10 still fails on "No package slurm available" (T12).
 
 ### Future work
 
