@@ -68,7 +68,7 @@ __slurm_config_default:
   SlurmdSpoolDir: >-
     {{
       '/var/lib/slurm-llnl/slurmctld' if __slurm_llnl else (
-      '/var/lib/slurm/slurmctld' if __slurm_debian else (
+      '/var/lib/slurm/slurmd' if __slurm_debian else (
       '/var/spool/slurm/d' if __slurm_redhat else
       omit))
     }}

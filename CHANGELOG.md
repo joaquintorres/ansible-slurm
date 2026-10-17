@@ -35,3 +35,9 @@
 
 - The README lists supported versions and adds upgrade notes. The README
   example no longer sets the removed `CgroupAutomount` and `TaskAffinity`.
+
+### Fixed
+
+- Debian/Ubuntu: the default `SlurmdSpoolDir` is now `/var/lib/slurm/slurmd`,
+  the directory the Debian `slurmd` package creates. It was
+  `/var/lib/slurm/slurmctld`, the same directory as `StateSaveLocation`.
