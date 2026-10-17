@@ -5,6 +5,8 @@
     slurm_roles: [controller, exec]
     slurm_config:
       SlurmctldHost: "{{ ansible_hostname }}"
+      # auth/slurm by default; slurm.key is generated next to this playbook
+      AuthType: "{{ lookup('env', 'MOLECULE_SLURM_AUTH') | default('auth/slurm', true) }}"
     slurm_nodes:
       - name: "{{ ansible_hostname }}"
         State: UNKNOWN

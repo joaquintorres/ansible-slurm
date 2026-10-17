@@ -466,6 +466,10 @@ list doesn't install `munge` explicitly; it relies on dependencies.
   workflow at commit 6c9abb0 passed on ubuntu2404 (converge,
   idempotence, and verify with `srun hostname`). el10 failed as expected
   ("No package slurm-slurmctld available") and is allowed to fail until T12.
+  Follow-up (2026-10-17): the scenario now defaults to `AuthType: auth/slurm`
+  (`MOLECULE_SLURM_AUTH`), generating `slurm.key` through T11g. CI runs
+  ubuntu2404 with auth/slurm and with auth/munge (both required), and el10 with
+  auth/slurm (allowed to fail). verify also asserts the AuthType in use.
   The first run also found a T1 bug (scontrol needs slurm.conf even for
   `--version`), fixed in 56003af.
 - T11: added (2026-10-17) for pre-existing bugs, AuthType restart, and

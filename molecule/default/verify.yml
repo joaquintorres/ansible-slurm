@@ -3,6 +3,15 @@
   hosts: all
   gather_facts: false
   tasks:
+    - name: Read the running configuration
+      ansible.builtin.command: scontrol show config
+      register: __config
+      changed_when: false
+
+    - name: Check the authentication plugin in use
+      ansible.builtin.assert:
+        that: __config.stdout is search('AuthType\\s*=\\s*' ~ (lookup('env', 'MOLECULE_SLURM_AUTH') | default('auth/slurm', true)))
+
     - name: Wait for the node to be idle
       ansible.builtin.command: sinfo -h -o %t
       register: __sinfo
