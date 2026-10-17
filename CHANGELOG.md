@@ -50,3 +50,6 @@
 - logrotate: the rotated path now follows the role's log directory. On current
   Debian/Ubuntu that is `/var/log/slurm`; it used to be hardcoded to
   `/var/log/slurm-llnl`.
+- `meta/main.yml`: `min_ansible_version` is now `"2.10.4"`. The role's
+  `ansible.builtin.include_tasks` tasks need it: Ansible 2.10.0–2.10.3
+  recognize only the bare `include_tasks` name. The old value was `"2.5"`.
