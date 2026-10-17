@@ -433,6 +433,26 @@ names won't match. Supporting OpenHPC needs a public package-name override.
 That would be a new installation source, which is out of scope until a task
 allows it.
 
+### Slurm with `auth/slurm` on EL (researched 2026-10-17)
+
+`auth/slurm` is only built with JWT, even in 26.05.5
+(`src/plugins/auth/Makefile.am`: `if WITH_JWT ... SUBDIRS += jwt slurm`).
+Checked by reading RPM headers:
+
+| Source | EL | Slurm | `auth_slurm.so` | Notes |
+|---|---|---|---|---|
+| OpenHPC 2.11 | 8 | 25.05.9 | yes | `-ohpc` names, /usr |
+| OpenHPC 3.6 | 9 | 25.11.8 | yes | `-ohpc` names, /usr |
+| OpenHPC 4.1 (and `updates/`) | 10 | 25.05.7 | **no** | Built without jwt/json: only auth_munge/cred_munge |
+| EPEL 10.3 / 10.4 | 10 | 26.05.4 | yes | EPEL names, /usr. Not in EPEL 10.0–10.2. Needs GLIBC ≤ 2.38 (Rocky 10.2 has 2.39), and every soname resolves in Rocky 10.2 + EPEL 10.2 (llhttp 9.1.3 AppStream, librdkafka AppStream, hdf5 1.14.5 and libjwt 2.1.2 in EPEL 10.2). Untested on 10.2. |
+| COPR `cmdntrf/Slurm26.05` | 8/9/10 | 26.05.5 | yes | Upstream spec built with jwt and the EPEL package names. `--prefix=/opt/software/slurm`, so binaries are not on PATH. Config is /etc/slurm and units are in /usr/lib/systemd/system. epel-10 is built on CentOS Stream 10. Third-party. |
+| `jose-d/slurm_for_Rocky9` | 8/9/10 | 26.05.4 (EL9/10) | not documented | Unsigned (`gpgcheck=0`), manual builds. Not recommended. |
+| Build from source | any | any | with `--with jwt` | SchedMD `slurm.spec` (`rpmbuild -ta`) makes the same package names as EPEL, so `slurm_package_source: distro` works with a local repo. `--with jwt` needs `libjwt-devel` < 3; EPEL 10.2 has 2.1.2. Other build deps are unchecked. |
+
+Rocky makes minor releases every May and November, so 10.3 is expected
+around November 2026. That is an inference; Rocky publishes no dates. Once
+it ships, plain EPEL gives EL 10 Slurm 26.05 with `auth/slurm`.
+
 The RedHat package list includes `munge` but not `munge-libs`. The Debian
 list doesn't install `munge` explicitly; it relies on dependencies.
 
