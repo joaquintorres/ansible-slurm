@@ -53,3 +53,8 @@
 - `meta/main.yml`: `min_ansible_version` is now `"2.10.4"`. The role's
   `ansible.builtin.include_tasks` tasks need it: Ansible 2.10.0–2.10.3
   recognize only the bare `include_tasks` name. The old value was `"2.5"`.
+- `slurmdbd.conf` changes now restart slurmdbd instead of reloading it, so an
+  `AuthType` change takes effect; `slurmdbd.conf(5)` requires a restart for
+  that. Running jobs aren't interrupted: slurmctld queues accounting records
+  while slurmdbd is down. A new "Restart slurmdbd" handler runs before the
+  slurmctld and slurmd handlers.

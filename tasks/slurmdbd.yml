@@ -31,4 +31,4 @@
   loop_control:
     label: "{{ item.name }}"
   notify:
-    - Reload slurmdbd
+    - Restart slurmdbd
