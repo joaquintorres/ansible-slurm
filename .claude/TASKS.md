@@ -391,13 +391,13 @@ Option-level exceptions remain, and none of them is a one-line fix:
 |---|---|---|
 | EL 8 | 20.11.9 | EPEL 8 (packages.fedoraproject.org) |
 | EL 9 | 22.05.11 | EPEL 9 |
-| EL 10 | 26.05.4 (26.05.5 in testing) | EPEL 10.3 / 10.4 |
+| EL 10 | none in EPEL 10.0–10.2; 26.05.4 only in EPEL 10.3 / 10.4 (corrected 2026-10-17) | EPEL. Rocky 10.2, the newest released EL 10, gets EPEL 10.2, which has no Slurm (first CI run: "No package slurm available"). |
 | Ubuntu 22.04 | 21.08.5 | universe, `slurm-wlm` (packages.ubuntu.com). Dropped from the target list. |
 | Ubuntu 24.04 | 23.11.4 | universe |
 | Debian 12 | 22.05.8 | main (packages.debian.org) |
 | Debian 13 | 24.11.5 | main |
 
-Only EL 10, Ubuntu 24.04, and Debian 13 ship 23.11 or later. Ubuntu 26.04
+Only Ubuntu 24.04 and Debian 13 ship 23.11 or later today. EL 10 does only once it reaches 10.3, or with OpenHPC 4 (`/OpenHPC/4/EL_10`, version not yet checked). Ubuntu 26.04
 (25.11.2) is out but isn't in CLAUDE.md's target list. SchedMD publishes
 source only; it has no distro repos.
 
