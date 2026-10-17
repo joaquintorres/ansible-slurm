@@ -52,6 +52,12 @@ may be specified in the `slurm_acct_gather_config`, `slurm_cgroup_config` (both 
 
 Set `slurm_upgrade` to true to upgrade the installed Slurm packages.
 
+With `AuthType: auth/slurm` in `slurm_config` (Slurm 23.11 or newer), the role installs `slurm.key` in
+`slurm_config_dir` on controller, execution and slurmdbd hosts (owned by the Slurm user, mode 0600). Set `slurm_key`
+to the path of a key on the control node to use your own key. Otherwise the role generates one once, as
+`slurm.key` next to your playbook, and reuses it on later runs. Keep that file safe (for example with
+`ansible-vault`). If you run the playbook from another directory, the role generates and installs a new key.
+
 You can use `slurm_user` (a hash) and `slurm_create_user` (a bool) to pre-create a Slurm user so that uids match.
 
 Note that this role requires root access, so enable ``become`` either globally in your playbook / on the commandline or

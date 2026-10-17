@@ -172,7 +172,7 @@ push or run it from this environment, say so and leave the box unchecked.
 
 ---
 
-## [ ] T11 — Pre-existing bugs, AuthType restart, and slurm.key
+## [x] T11 — Pre-existing bugs, AuthType restart, and slurm.key
 
 Make each item its own commit (`slurm: T11a ...`, `slurm: T11b ...`), with
 its own diff-budget check. Verify every Slurm claim as in CLAUDE.md rule 6.
@@ -476,5 +476,5 @@ list doesn't install `munge` explicitly; it relies on dependencies.
 - logrotate.j2 hardcodes `/var/log/slurm-llnl` for all Debian-family hosts. Now covered by T11d.
 - An install source for Slurm 23.11 or later on EL 8/9 and Debian 12 (out of scope: new installation sources). See the EL 8/9 research above; OpenHPC is the best candidate.
 - Ubuntu 26.04 and Debian 13 support, as candidates for the target list.
-- auth/slurm: T3 derives CredType and the slurmdbd AuthType from `slurm_config.AuthType`, but the role neither distributes `slurm.key` (owned by SlurmUser, mode 0600) nor skips munge setup under auth/slurm. `slurm.key` is now covered by T11g; skipping munge is still out of scope.
+- auth/slurm: T3 derives CredType and the slurmdbd AuthType from `slurm_config.AuthType`, but the role neither distributes `slurm.key` (owned by SlurmUser, mode 0600) nor skips munge setup under auth/slurm. `slurm.key` is done (T11g, `slurm_key`); skipping munge is still out of scope.
 - Removed-parameter guard (T5) covers only keys removed by 23.11. Keys removed later (`AccountingStorageUser` 25.11; `GetEnvTimeout`, `CoreSpecPlugin`, `PowerPlugin`, `PowerParameters` defunct in 26.05) need version gating, but `__slurm_version` is only set after config templating.

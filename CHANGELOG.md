@@ -58,3 +58,12 @@
   that. Running jobs aren't interrupted: slurmctld queues accounting records
   while slurmdbd is down. A new "Restart slurmdbd" handler runs before the
   slurmctld and slurmd handlers.
+
+### Added (auth/slurm)
+
+- New variable `slurm_key`. When `slurm_config.AuthType` is `auth/slurm`, the
+  role installs `slurm.key` in `slurm_config_dir` on controller, execution, and
+  slurmdbd hosts (owner Slurm user, mode 0600) and restarts the daemons when
+  it changes. If `slurm_key` is unset, it generates the key once on the control
+  node as `slurm.key` next to the playbook (1024 random bytes, as in the Slurm
+  authentication docs) and never regenerates an existing file.

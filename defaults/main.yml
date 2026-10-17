@@ -11,6 +11,8 @@ slurm_create_user: "{{ __slurm_redhat }}"
 slurm_create_dirs: "{{ __slurm_redhat }}"
 slurm_rotate_logs: "{{ __slurm_redhat }}"
 slurm_configure_munge: true
+# auth/slurm key source on the control node; generated there once if slurm_key is unset
+__slurm_key_src: "{{ slurm_key | default(playbook_dir ~ '/slurm.key') }}"
 
 # Service names are the same on both distros since ??
 slurmd_service_name: slurmd

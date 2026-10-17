@@ -16,6 +16,33 @@
     mode: 0644
   when: slurm_rotate_logs
 
+# auth/slurm (23.11+): key from the authentication docs, owned by SlurmUser, mode 0600
+- name: Generate slurm.key on the control node
+  ansible.builtin.shell: umask 077 && dd if=/dev/random of={{ __slurm_key_src | quote }} bs=1024 count=1
+  args:
+    creates: "{{ __slurm_key_src }}"
+  delegate_to: localhost
+  become: false
+  run_once: true
+  when: __slurm_config_merged.AuthType == 'auth/slurm' and slurm_key is not defined
+
+- name: Install slurm.key
+  ansible.builtin.copy:
+    src: "{{ __slurm_key_src }}"
+    dest: "{{ slurm_config_dir }}/slurm.key"
+    owner: "{{ __slurm_user_name }}"
+    group: "{{ __slurm_group_name }}"
+    mode: "0600"
+  no_log: true
+  when:
+    - __slurm_config_merged.AuthType == 'auth/slurm'
+    - slurm_roles | length > 0 or group_names | intersect(['slurmservers', 'slurmexechosts', 'slurmdbdservers']) | length > 0
+    - not ansible_check_mode or __slurm_key_src is file
+  notify:
+    - Restart slurmdbd
+    - Restart slurmctld
+    - Restart slurmd
+
 - name: Install slurm.conf
   ansible.builtin.template:
     src: "slurm.conf.j2"
