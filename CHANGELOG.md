@@ -23,3 +23,9 @@
   Slurm 23.11 (for example `SelectType: select/cons_res`, `FastSchedule`, or
   `CgroupAutomount`). The message names the replacement, if there is one.
   The list is `__slurm_removed_params` in `vars/main.yml`.
+
+### Platforms
+
+- `meta/main.yml` now lists EL 8/9/10 and Ubuntu 22.04 (jammy) / 24.04 (noble)
+  instead of "all" for EL, Fedora, Ubuntu, and Debian. Debian and Fedora are
+  no longer declared, but the Debian code paths are unchanged.

@@ -122,7 +122,7 @@ changed line.
 
 ---
 
-## [ ] T8 — Platform metadata and CI matrix
+## [x] T8 — Platform metadata and CI matrix
 
 Update the `platforms` list in `meta/main.yml`, and any existing CI matrix,
 to the supported OS list in CLAUDE.md. Don't add new CI systems.

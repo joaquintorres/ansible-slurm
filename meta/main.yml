@@ -10,16 +10,13 @@ galaxy_info:
   platforms:
     - name: EL
       versions:
-        - all
-    - name: Fedora
-      versions:
-        - all
+        - "8"
+        - "9"
+        - "10"
     - name: Ubuntu
       versions:
-        - all
-    - name: Debian
-      versions:
-        - all
+        - jammy
+        - noble
   galaxy_tags:
     - cluster
     - hpc
