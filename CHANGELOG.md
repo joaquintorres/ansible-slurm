@@ -47,3 +47,6 @@
   `sacctmgr -n -P list cluster format=Cluster` and no longer reports a change
   on every run. It used to compare the fourth space-separated field with the
   literal `"cluster"`.
+- logrotate: the rotated path now follows the role's log directory. On current
+  Debian/Ubuntu that is `/var/log/slurm`; it used to be hardcoded to
+  `/var/log/slurm-llnl`.
