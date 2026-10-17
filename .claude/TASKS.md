@@ -55,7 +55,7 @@ Make Debian and Ubuntu use `/etc/slurm` on the supported releases.
 
 ---
 
-## [ ] T3 — Modern `slurm.conf` defaults
+## [x] T3 — Modern `slurm.conf` defaults
 
 Replace removed or renamed keys in role **defaults and templates only**:
 
@@ -318,3 +318,4 @@ list doesn't install `munge` explicitly; it relies on dependencies.
 - logrotate.j2 hardcodes `/var/log/slurm-llnl` for all Debian-family hosts.
 - An install source for Slurm 23.11 or later on EL 8/9, Ubuntu 22.04, and Debian 12 (out of scope: new installation sources).
 - Ubuntu 26.04 and Debian 13 support, as candidates for the target list.
+- auth/slurm: T3 derives CredType and the slurmdbd AuthType from `slurm_config.AuthType`, but the role neither distributes `slurm.key` (owned by SlurmUser, mode 0600) nor skips munge setup under auth/slurm. Out of scope ("Adding auth/slurm").

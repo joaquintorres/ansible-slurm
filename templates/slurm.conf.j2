@@ -3,8 +3,8 @@
 ##
 
 {% if 'ControlMachine' not in __slurm_config_merged and 'SlurmctldHost' not in __slurm_config_merged %}
-# Default, define SlurmctldHost or ControlMachine to override
-ControlMachine=localhost
+# Default, define SlurmctldHost to override
+SlurmctldHost=localhost
 {% endif %}
 
 # Configuration options

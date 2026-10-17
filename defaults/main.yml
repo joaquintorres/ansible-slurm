@@ -44,7 +44,8 @@ __slurm_redhat: "{{ ansible_os_family == 'RedHat' }}"
 
 __slurm_config_default:
   AuthType: auth/munge
-  CryptoType: crypto/munge
+  # CryptoType is a legacy alias of CredType (both parsed since 20.11); auth/slurm requires cred/slurm (23.11+)
+  CredType: "{{ 'cred/slurm' if (slurm_config | default({})).AuthType | default('') == 'auth/slurm' else 'cred/munge' }}"
   SlurmUser: "{{ __slurm_user_name }}"
   ClusterName: "{{ __slurm_cluster_name }}"
   # default is proctrack/cgroup which is the best but also less than 100% chance of working e.g. in docker
@@ -88,7 +89,7 @@ __slurm_redhat_packages:
 __slurm_packages: "{{ __slurm_debian_packages if __slurm_debian else __slurm_redhat_packages }}"
 
 __slurmdbd_config_default:
-  AuthType: auth/munge
+  AuthType: "{{ __slurm_config_merged.AuthType }}"
   DbdPort: 6819
   SlurmUser: "{{ __slurm_user_name }}"
   SlurmctldPidFile: "{{ __slurm_run_dir ~ '/slurmdbd.pid' if __slurm_debian else omit }}"
