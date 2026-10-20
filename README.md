@@ -1,7 +1,7 @@
 Slurm
 =====
 
-Install and configure a Slurm cluster on Enterprise Linux or Ubuntu servers
+Install and configure a Slurm cluster on Enterprise Linux or Ubuntu servers. Testbed for using Claude Code on Ansible Roles, use at your own risk!
 
 Supported Versions
 ------------------
